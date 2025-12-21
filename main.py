@@ -16,7 +16,6 @@ def parse_args():
     parser.add_argument("-n", "--num-masks", type=int, default=3, help="Number of masks to save (box and auto mode only)")
     parser.add_argument("-s", "--box", nargs=4, type=int, help="Generate masks from a box selection. Optional box coordinate: x1 y1 x2 y2")
     parser.add_argument("--pfm", action="store_true", help="Save mask as .pfm instead of .png")
-    parser.add_argument("--overlay", action="store_true", help="Save overlay image (box mode only)")
     parser.add_argument("--points", action="store_true", help="Generate masks from point-based selection")
     parser.add_argument("--text", type=str, help="Generate masks from text prompt")
     parser.add_argument("--auto", action="store_true", help="Generate automatic masks")
@@ -71,10 +70,7 @@ def main():
             num_masks=args.num_masks,
             box=args.box,
             pfm=args.pfm,
-            overlay=args.overlay,
         )
-
-
 
 if __name__ == "__main__":
     main()
