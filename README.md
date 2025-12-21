@@ -60,11 +60,7 @@ uv venv
 
 Install application:
 
-```
-uv pip install -r requirements.txt
-```
-
-If your GPU is running CUDA 13, run this after running the command above:
+If your GPU is running CUDA 13, run this command first. You can check your version by running `nvidia-smi`:
 
 ```
 uv pip install --pre --index-url https://download.pytorch.org/whl/nightly/cu130 torch
@@ -74,6 +70,12 @@ If you don't have a GPU and want to install it for CPU only:
 
 ```
 uv pip install -r requirements-cpu.txt
+```
+
+Otherwise, run this command:
+
+```
+uv pip install -r requirements.txt
 ```
 
 SAM3 checkpoints are gated on Hugging Face, so you must request access and log in before first run.
@@ -87,14 +89,14 @@ Create a Hugging Face access token (token type should be Read):
 Log in from your terminal using the access token:
 
 ```
-hf auth login
+uv run hf auth login
 ```
 
 First run to download the model files into the HF cache (`~/.cache/huggingface/`).
 
 ```
 ls -lah ./example
-uv run main.py -i ./example/1.jpg -o ./example --prompt "sky" 
+uv run main.py -i ./example/1.jpg -o ./example --text "sky" 
 ls -lah ./example
 ```
 
@@ -109,11 +111,11 @@ sudo cp ./launcher/sam3-tools /usr/local/bin/sam3-tools
 sudo chmod +x /usr/local/bin/sam3-tools
 ```
 
-Now you can run:
+#### Optional: Darktable integration
 
+Install the darktable plugin:
 ```
-sam3-tools
+rm -rf $HOME/.config/darktable/lua/Custom
+git clone https://github.com/AyedaOk/DT_custom_script.git $HOME/.config/darktable/lua/Custom
 ```
-
-
 

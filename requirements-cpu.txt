@@ -3,7 +3,7 @@
 
 torch
 torchvision
-transformers
+transformers>=5.0.0rc1
 accelerate
 numpy
 opencv-python
