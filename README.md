@@ -28,21 +28,8 @@ The installation script is the easiest way to install **sam3-tools**. It will:
 
 #### Linux
 
-
 ```
 bash <(curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/linux_install.sh)
-```
-
-After the installation, if `uv --version` returns “command not found”:
-```
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-Or fish:
-```
-fish_add_path -U ~/.local/bin
-exec fish
 ```
 
 ### Linux Installation Steps:

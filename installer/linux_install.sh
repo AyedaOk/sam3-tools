@@ -178,7 +178,8 @@ CPU_REPLY="${CPU_REPLY:-N}"
 
 if [[ "$CPU_REPLY" =~ ^[Yy]$ ]]; then
   ok "Installing CPU-only requirements..."
-  uv pip install -r requirements-cpu.txt
+  uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+  uv pip install -r requirements.txt
 else
   ok "Installing default requirements..."
   uv pip install -r requirements.txt
