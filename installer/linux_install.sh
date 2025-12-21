@@ -151,7 +151,7 @@ if [ -d "$INSTALL_DIR/.git" ]; then
   git -C "$INSTALL_DIR" pull
 else
   ok "Cloning repository..."
-  git clone git@github.com:AyedaOk/sam3-tools.git "$INSTALL_DIR"
+  git clone "$REPO_URL" "$INSTALL_DIR"
 fi
 
 cd "$INSTALL_DIR"
