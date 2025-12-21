@@ -183,7 +183,7 @@ if [[ "$CPU_REPLY" =~ ^[Yy]$ ]]; then
 else
   # CUDA 13 detection
 
-  read -rp "Are you running CUDA 13? [y/N] " CUDA_REPLY </dev/tty
+  read -rp "Do you want to install the CUDA 13 (cu130) PyTorch build? (Check with: nvidia-smi) [y/N] " CUDA_REPLY </dev/tty
   CUDA_REPLY="${CUDA_REPLY:-N}"
   if [[ "$CUDA_REPLY" =~ ^[Yy]$ ]]; then
     uv pip install --pre --upgrade --index-url https://download.pytorch.org/whl/nightly/cu130 \
