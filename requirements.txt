@@ -1,0 +1,17 @@
+# PyTorch nightly CUDA 13.0 wheels (has cp313 builds)
+--index-url https://download.pytorch.org/whl/nightly/cu130
+--extra-index-url https://pypi.org/simple
+
+torch
+torchvision
+
+# SAM3 is in Transformers v5 (rc or newer)
+--pre
+transformers>=5.0.0rc1
+accelerate
+
+# Your app deps
+numpy
+opencv-python
+Pillow
+PyYAML
