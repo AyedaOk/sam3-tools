@@ -181,13 +181,11 @@ if [[ "$CPU_REPLY" =~ ^[Yy]$ ]]; then
   uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
   uv pip install -r requirements.txt
 else
-  # CUDA 13 detection (best-effort)
-  CUDA_VER=""
-  if has_cmd nvidia-smi; then
-    CUDA_VER="$(nvidia-smi 2>/dev/null | grep -o "CUDA Version: [0-9]\+" | head -n1 | awk '{print $3}' || true)"
-  fi
-  if [[ "$CUDA_VER" == 13* ]]; then
-    ok "Detected NVIDIA CUDA Version: $CUDA_VER (from nvidia-smi)"
+  # CUDA 13 detection
+
+  read -rp "Are you running CUDA 13? [y/N] " CUDA_REPLY </dev/tty
+  CUDA_REPLY="${CUDA_REPLY:-N}"
+  if [[ "$CUDA_REPLY" =~ ^[Yy]$ ]]; then
     uv pip install --pre --upgrade --index-url https://download.pytorch.org/whl/nightly/cu130 \
       --extra-index-url https://pypi.org/simple \
       torch torchvision
