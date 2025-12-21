@@ -16,9 +16,6 @@ PLUGIN_DIR="$HOME/.config/darktable/lua/Custom"
 HF_MODEL_PAGE="https://huggingface.co/facebook/sam3"
 HF_TOKEN_PAGE="https://huggingface.co/settings/tokens"
 
-# Preferred Python when system python is too new (helps avoid 3.14+ issues)
-PREFERRED_PYTHON_VERSION="${PREFERRED_PYTHON_VERSION:-3.12}"
-
 # ---------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------
@@ -158,7 +155,6 @@ cd "$INSTALL_DIR"
 
 # ---------------------------------------------------------
 # 5) Create uv virtual environment
-#    - Use system python unless it's 3.14+ (then use PREFERRED_PYTHON_VERSION)
 # ---------------------------------------------------------
 if [ ! -d "$VENV_DIR" ]; then
   ok "Creating virtual environment with uv..."
