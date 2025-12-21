@@ -219,7 +219,7 @@ fi
 # 8) Optional: trigger first model download
 # ---------------------------------------------------------
 echo ""
-read -rp "Download the SAM3 model now (~3Gb)? [Y/n] " DL_REPLY </dev/tty
+read -rp "Download the SAM3 model now (~3.5GB)? [Y/n] " DL_REPLY </dev/tty
 DL_REPLY="${DL_REPLY:-Y}"
 
 if [[ "$DL_REPLY" =~ ^[Yy]$ ]]; then
