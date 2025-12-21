@@ -237,7 +237,7 @@ cd "\$APP_DIR" || exit 1
 EOF
   sudo chmod +x "$LAUNCHER_PATH"
   warn "Testing launcher..."
-  sam3-tools --help || warn "Launcher test failed — but installation may still be OK."
+  sam3-tools --help || warn "Launcher test failed but installation may still be OK."
 else
   warn "Skipping launcher installation."
 fi
