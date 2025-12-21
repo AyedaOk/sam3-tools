@@ -15,6 +15,23 @@ SAM3‑Tools is a lightweight Python application offering both a simple GUI and 
 
 ## Install
 
+### Installation scripts
+
+The installation script is the easiest way to install **sam3-tools**. It will:
+
+* Install dependencies
+* Clone the repository
+* Create a virtual environment
+* Install the Python app and its requirements
+* Download the SAM3 model checkpoints (Optional)
+* Install the Darktable plugin (Optional)
+
+#### Linux
+
+```
+curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/linux_install.sh | bash
+```
+
 ### Linux Installation Steps:
 
 Install the following first:
