@@ -79,37 +79,22 @@ if [[ "$FAMILY" == "unknown" ]]; then
 fi
 
 # ---------------------------------------------------------
-# 2) Ensure system dependencies
+# 2) Ensure system dependencies (git + curl/wget only)
 # ---------------------------------------------------------
 missing=false
 
-# core tools
-has_cmd git     || missing=true
-has_cmd python3 || missing=true
-has_cmd curl || has_cmd wget || missing=true
-
-# Tk (GUI)
-case "$FAMILY" in
-  debian)
-    dpkg -l 2>/dev/null | grep -q "python3-tk" || missing=true
-    ;;
-  arch)
-    pacman -Q tk >/dev/null 2>&1 || missing=true
-    ;;
-  fedora)
-    rpm -qa 2>/dev/null | grep -q "python3-tkinter" || missing=true
-    ;;
-esac
+has_cmd git || missing=true
+(has_cmd curl || has_cmd wget) || missing=true
 
 if $missing; then
-  warn "Some dependencies are missing, installing them..."
+  warn "Installing required system dependencies (git + curl)..."
   case "$FAMILY" in
     debian)
       sudo apt update
-      sudo apt install -y python3-tk git curl
+      sudo apt install -y git curl
       ;;
     arch)
-      sudo pacman -Syu --noconfirm python tk git curl
+      sudo pacman -Syu --noconfirm git curl
       ;;
     fedora)
       sudo dnf install -y git curl
@@ -118,6 +103,7 @@ if $missing; then
 else
   ok "All system dependencies already installed."
 fi
+
 
 # ---------------------------------------------------------
 # 3) Install uv if missing + ensure PATH

@@ -36,11 +36,11 @@ bash <(curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/inst
 
 Install the following first:
 
-* Arch: `sudo pacman -S tk git`
+* Arch: `sudo pacman -S curl git`
 
-* Debian/Ubuntu: `sudo apt install python3-tk git`
+* Debian/Ubuntu: `sudo apt install curl git`
 
-* Fedora: `sudo dnf install -y git python3-tkinter gcc gcc-c++ make python-devel` (À tester)
+* Fedora: `sudo dnf install -y curl git` 
 
 Install UV:
 
@@ -80,13 +80,15 @@ Install application:
 If your GPU is running CUDA 13, run this command first. You can check your version by running `nvidia-smi`:
 
 ```
-uv pip install --pre --index-url https://download.pytorch.org/whl/nightly/cu130 torch
+uv pip install --pre --index-url https://download.pytorch.org/whl/nightly/cu130 torch torchvision
+uv pip install -r requirements.txt
 ```
 
 If you don't have a GPU and want to install it for CPU only:
 
 ```
-uv pip install -r requirements-cpu.txt
+uv pip install --pre --index-url https://download.pytorch.org/whl/cpu torch torchvision
+uv pip install -r requirements.txt
 ```
 
 Otherwise, run this command:
