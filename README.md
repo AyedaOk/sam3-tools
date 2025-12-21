@@ -28,10 +28,12 @@ The installation script is the easiest way to install **sam3-tools**. It will:
 
 #### Linux
 
+
 ```
-curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/linux_install.sh | bash
+bash <(curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/linux_install.sh)
 ```
-Make UV available (bash):
+
+After the installation, if `uv --version` returns “command not found”:
 ```
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
@@ -120,12 +122,10 @@ Log in from your terminal using the access token:
 uv run hf auth login
 ```
 
-First run to download the model files into the HF cache (`~/.cache/huggingface/`).
+Download the model files into the HF cache (`~/.cache/huggingface/`).
 
 ```
-ls -lah ./example
-uv run main.py -i ./example/1.jpg -o ./example --text "sky" 
-ls -lah ./example
+uv run python -c "from transformers import Sam3Model, Sam3Processor; Sam3Model.from_pretrained('facebook/sam3'); Sam3Processor.from_pretrained('facebook/sam3'); print('SAM3 downloaded into ~/.cache/huggingface/')"
 ```
 
 #### Optional: System-wide launcher (required for Darktable integration)

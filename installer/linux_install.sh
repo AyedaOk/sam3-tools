@@ -7,6 +7,7 @@ echo "=== SAM3-Tools Installer ==="
 # Paths / URLs
 # ---------------------------------------------------------
 REPO_URL="https://github.com/AyedaOk/sam3-tools.git"
+LUA_REPO_URL="https://github.com/AyedaOk/DT_custom_script.git"
 INSTALL_DIR="$HOME/.local/opt/sam3-tools"
 VENV_DIR="$INSTALL_DIR/.venv"                # uv default
 LAUNCHER_PATH="/usr/local/bin/sam3-tools"
@@ -223,7 +224,7 @@ HF_REPLY="${HF_REPLY:-Y}"
 
 if [[ "$HF_REPLY" =~ ^[Yy]$ ]]; then
   ok "Starting Hugging Face login..."
-  uv run hf auth login || warn "Hugging Face login returned a non-zero exit code. Continuing..."
+  uv run hf auth login </dev/tty || warn "HF login returned non-zero; continuing..."
 else
   warn "Skipping Hugging Face login. Model download will fail until you run: uv run hf auth login"
 fi
@@ -279,7 +280,7 @@ PLUG_REPLY="${PLUG_REPLY:-Y}"
 if [[ "$PLUG_REPLY" =~ ^[Yy]$ ]]; then
   ok "Installing Darktable plugin..."
   rm -rf "$PLUGIN_DIR"
-  git clone "$REPO_URL" "$INSTALL_DIR"
+  git clone "$LUA_REPO_URL" "$PLUGIN_DIR"
 else
   warn "Skipping plugin installation."
 fi
