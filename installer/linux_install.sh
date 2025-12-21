@@ -181,32 +181,19 @@ if [[ "$CPU_REPLY" =~ ^[Yy]$ ]]; then
   uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
   uv pip install -r requirements.txt
 else
-  ok "Installing default requirements..."
-  uv pip install -r requirements.txt
-
   # CUDA 13 detection (best-effort)
   CUDA_VER=""
   if has_cmd nvidia-smi; then
     CUDA_VER="$(nvidia-smi 2>/dev/null | grep -o "CUDA Version: [0-9]\+" | head -n1 | awk '{print $3}' || true)"
   fi
-  DEFAULT_CU130="N"
   if [[ "$CUDA_VER" == 13* ]]; then
-    DEFAULT_CU130="Y"
     ok "Detected NVIDIA CUDA Version: $CUDA_VER (from nvidia-smi)"
-  fi
-
-  read -rp "Install/upgrade PyTorch nightly for CUDA 13 (cu130)? [${DEFAULT_CU130}/n] " CU130_REPLY </dev/tty
-  CU130_REPLY="${CU130_REPLY:-$DEFAULT_CU130}"
-
-  if [[ "$CU130_REPLY" =~ ^[Yy]$ ]]; then
-    ok "Upgrading torch + torchvision from cu130 nightly index..."
-    uv pip install --pre --upgrade \
-      --index-url https://download.pytorch.org/whl/nightly/cu130 \
+    uv pip install --pre --upgrade --index-url https://download.pytorch.org/whl/nightly/cu130 \
       --extra-index-url https://pypi.org/simple \
       torch torchvision
-  else
-    ok "Skipping cu130 torch upgrade."
   fi
+  uv pip install -r requirements.txt
+
 fi
 
 rm -rf "$TMPDIR_PATH"
