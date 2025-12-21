@@ -1,0 +1,11 @@
+--index-url https://download.pytorch.org/whl/nightly/cpu
+--extra-index-url https://pypi.org/simple
+
+torch
+torchvision
+transformers
+accelerate
+numpy
+opencv-python
+Pillow
+PyYAML
