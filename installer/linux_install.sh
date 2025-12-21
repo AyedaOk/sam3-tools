@@ -223,7 +223,7 @@ HF_REPLY="${HF_REPLY:-Y}"
 
 if [[ "$HF_REPLY" =~ ^[Yy]$ ]]; then
   ok "Starting Hugging Face login..."
-  uv run hf auth login
+  uv run hf auth login || warn "Hugging Face login returned a non-zero exit code. Continuing..."
 else
   warn "Skipping Hugging Face login. Model download will fail until you run: uv run hf auth login"
 fi
