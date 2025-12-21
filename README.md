@@ -19,20 +19,34 @@ SAM3‑Tools is a lightweight Python application offering both a simple GUI and 
 
 Install the following first:
 
-- Arch: `sudo pacman -S tk git` 
+* Arch: `sudo pacman -S tk git`
 
-- Debian/Ubuntu: `sudo apt install python3-tk git` 
+* Debian/Ubuntu: `sudo apt install python3-tk git`
 
-- Fedora: `sudo dnf install -y git python3-tkinter gcc gcc-c++ make python-devel` (À tester)
+* Fedora: `sudo dnf install -y git python3-tkinter gcc gcc-c++ make python-devel` (À tester)
 
 Install UV:
+
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Create the installation dirrectory:
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
 ```
-mkdir $HOME/.local/opt/
+source $HOME/.local/bin/env 
+```
+
+Or this for fish:
+
+```
+source $HOME/.local/bin/env.fish 
+```
+
+Create the installation directory:
+
+```
+mkdir -p $HOME/.local/opt/
 ```
 
 Clone the repo, create the virtual environment and install the Python App:
@@ -44,51 +58,59 @@ cd sam3-tools
 uv venv
 ```
 
-Install application: 
+Install application:
+
 ```
 uv pip install -r requirements.txt
 ```
 
 If your GPU is running CUDA 13, run this after running the command above:
+
 ```
-pip install --pre --index-url https://download.pytorch.org/whl/nightly/cu130 torch
+uv pip install --pre --index-url https://download.pytorch.org/whl/nightly/cu130 torch
 ```
 
-If you don't have a GPU and want to install it  for CPU only:
+If you don't have a GPU and want to install it for CPU only:
+
 ```
 uv pip install -r requirements-cpu.txt
 ```
 
-SAM3 checkpoints are gated on Hugging Face, so you must request access + log in before first run. 
+SAM3 checkpoints are gated on Hugging Face, so you must request access and log in before first run.
 
 Request access here (wait for approval):
-https://huggingface.co/facebook/sam3 
+[https://huggingface.co/facebook/sam3](https://huggingface.co/facebook/sam3)
 
 Create a Hugging Face access token (token type should be Read):
-https://huggingface.co/settings/tokens
+[https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
 
 Log in from your terminal using the access token:
+
 ```
 hf auth login
 ```
 
 First run to download the model files into the HF cache (`~/.cache/huggingface/`).
+
 ```
 ls -lah ./example
-uv run main.py -i ./example/1.jpg -o ./exemple --prompt "sky" 
+uv run main.py -i ./example/1.jpg -o ./example --prompt "sky" 
 ls -lah ./example
 ```
 
-#### Optional: System‑wide launcher (required for Darktable integration)
-To install like a system‑wide “app”:
+#### Optional: System-wide launcher (required for Darktable integration)
+
+To install like a system-wide “app”:
 
 Install the launcher
+
 ```
-mv ./launcher/sam3-tools /usr/local/bin/
+sudo cp ./launcher/sam3-tools /usr/local/bin/sam3-tools
 sudo chmod +x /usr/local/bin/sam3-tools
 ```
 
 Now you can run:
+
 ```
 sam3-tools
 ```
