@@ -106,13 +106,13 @@ if $missing; then
   case "$FAMILY" in
     debian)
       sudo apt update
-      sudo apt install -y python3 python3-tk git curl
+      sudo apt install -y python3-tk git curl
       ;;
     arch)
       sudo pacman -Syu --noconfirm python tk git curl
       ;;
     fedora)
-      sudo dnf install -y python3 git curl python3-tkinter gcc gcc-c++ make python-devel
+      sudo dnf install -y git curl
       ;;
   esac
 else
