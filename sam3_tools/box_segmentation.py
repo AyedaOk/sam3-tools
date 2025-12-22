@@ -8,7 +8,6 @@ from transformers import Sam3TrackerProcessor, Sam3TrackerModel
 
 from .shared_utils import get_unique_path, save_pfm, BoxSelector
 
-
 def run_box_segmentation(input_path, output_path, num_masks=1, box=None, pfm=False):
 
     if not input_path or not os.path.exists(input_path):
