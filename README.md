@@ -39,6 +39,12 @@ bash <(curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/inst
 powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/win_install.ps1 | iex"
 ```
 
+#### macOS
+
+```
+bash <(curl -fsSL "https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/mac_install.sh")
+```
+
 ---
 
 ### Linux Installation Steps:
