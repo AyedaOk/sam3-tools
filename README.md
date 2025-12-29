@@ -32,6 +32,15 @@ The installation script is the easiest way to install **sam3-tools**. It will:
 bash <(curl -fsSL https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/linux_install.sh)
 ```
 
+
+#### Windows
+
+```
+powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/AyedaOk/sam3-tools/main/installer/win_install.ps1 | iex"
+```
+
+---
+
 ### Linux Installation Steps:
 
 Install the following first:
@@ -135,4 +144,192 @@ Install the darktable plugin:
 rm -rf $HOME/.config/darktable/lua/Custom
 git clone https://github.com/AyedaOk/DT_custom_script.git $HOME/.config/darktable/lua/Custom
 ```
+
+---
+
+### Windows Installation Steps
+
+Install the following first
+
+```powershell
+winget install -e --id Microsoft.VCRedist.2015+.x64 --source winget --accept-package-agreements --accept-source-agreements
+winget install -e --id Git.Git --source winget --accept-package-agreements --accept-source-agreements
+winget install -e --id astral-sh.uv --source winget --accept-package-agreements --accept-source-agreements
+```
+
+After installing, **close this terminal**, reopen PowerShell, and continue with:
+
+
+```powershell
+cd $env:USERPROFILE
+```
+
+Clone the repo, create the virtual environment:
+
+```powershell
+git clone https://github.com/AyedaOk/sam3-tools.git
+cd sam3-tools
+uv venv
+```
+
+Install application:
+
+If your GPU is running CUDA 13, run this command first. You can check your version by running `nvidia-smi`:
+
+```powershell
+uv pip install --pre --index-url https://download.pytorch.org/whl/nightly/cu130 torch torchvision
+uv pip install -r requirements.txt
+```
+
+If you don't have a GPU and want to install it for CPU only:
+
+```powershell
+uv pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+uv pip install -r requirements.txt
+```
+
+Otherwise, run this command:
+
+```powershell
+uv pip install -r requirements.txt
+```
+
+SAM3 checkpoints are gated on Hugging Face, so you must request access and log in before first run.
+
+Request access here (wait for approval):  
+https://huggingface.co/facebook/sam3
+
+Create a Hugging Face access token (token type should be Read):  
+https://huggingface.co/settings/tokens
+
+Log in from your terminal using the access token:
+
+```powershell
+uv run hf auth login
+```
+
+Download the model files into the Hugging Face cache:
+
+```powershell
+uv run python -c "from transformers import Sam3Model, Sam3Processor; Sam3Model.from_pretrained('facebook/sam3'); Sam3Processor.from_pretrained('facebook/sam3'); print('SAM3 downloaded into the Hugging Face cache')"
+```
+
+#### Optional: Darktable integration
+
+Install the Darktable plugin:
+
+```powershell
+Remove-Item "$env:LOCALAPPDATA\darktable\lua\Custom" -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path "$env:LOCALAPPDATA\darktable\lua" | Out-Null
+git clone https://github.com/AyedaOk/DT_custom_script.git "$env:LOCALAPPDATA\darktable\lua\Custom"
+```
+
+---
+
+### macOS Installation Steps (Apple Silicon)
+
+Install Homebrew first (skip if you already have `brew`):
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+If `brew` is not on your PATH yet, restart your terminal or run:
+
+```bash
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Install the following dependencies:
+
+```bash
+brew update
+brew install git uv
+```
+
+Create the installation directory:
+
+```bash
+mkdir -p "$HOME/Applications"
+```
+
+Clone the repo, create the virtual environment and install the Python app:
+
+```bash
+cd "$HOME/Applications"
+git clone https://github.com/AyedaOk/sam3-tools.git
+cd sam3-tools
+uv venv
+```
+
+Install application:
+
+```bash
+uv pip install torch torchvision
+uv pip install -r requirements.txt
+```
+
+SAM3 checkpoints are gated on Hugging Face, so you must request access and log in before first run.
+
+Request access here (wait for approval):  
+https://huggingface.co/facebook/sam3
+
+Create a Hugging Face access token (token type should be Read):  
+https://huggingface.co/settings/tokens
+
+Log in from your terminal using the access token:
+
+```bash
+uv run hf auth login
+```
+
+Download the model files into the Hugging Face cache:
+
+```bash
+uv run python -c "from transformers import Sam3Model, Sam3Processor; Sam3Model.from_pretrained('facebook/sam3'); Sam3Processor.from_pretrained('facebook/sam3'); print('SAM3 downloaded into the Hugging Face cache')"
+```
+
+#### Optional: macOS Launcher (required for Darktable integration)
+
+The launcher is included in:
+
+```bash
+sam3-tools/launcher/sam3-tools.command
+```
+
+Edit the `cd` line to match where you cloned the project.
+
+Example (default install to `~/Applications`):
+
+```bash
+#!/bin/bash
+set -e
+cd "$HOME/Applications/sam3-tools"
+exec "$HOME/Applications/sam3-tools/.venv/bin/python" main.py "$@"
+```
+
+Make the launcher executable:
+
+```bash
+cd "$HOME/Applications/sam3-tools"
+chmod +x launcher/sam3-tools.command
+```
+
+Now you can **double-click** `sam3-tools.command` in Finder to start the app.
+
+#### Optional: Darktable integration
+
+Install the darktable plugin:
+
+```bash
+rm -rf "$HOME/.config/darktable/lua/Custom"
+git clone https://github.com/AyedaOk/DT_custom_script.git "$HOME/.config/darktable/lua/Custom"
+```
+
+If builds fail (missing compilers/headers), install Xcode CLT (then re-run):
+
+```bash
+xcode-select --install
+```
+
 
