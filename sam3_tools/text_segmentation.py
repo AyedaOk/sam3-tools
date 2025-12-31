@@ -3,6 +3,7 @@ import torch
 from PIL import Image
 import numpy as np
 import os
+from datetime import datetime, timezone
 
 from .shared_utils import (
     save_pfm,
@@ -45,20 +46,20 @@ def run_text_segmentation(input_path, output_path, prompt, num_masks, pfm=False)
 
     base_name = os.path.splitext(os.path.basename(input_path))[0]
     count = min(num_masks, len(masks))
-
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     # Save masks
     for i in range(count):
         if not pfm:
             # Save to PNG
             mask = masks[i].cpu().numpy().astype(np.uint8) * 255
-            out_path = f"{output_dir}/{base_name}_mask_{i}.png"
+            out_path = f"{output_dir}/{base_name}_{ts}_mask_{i}.png"
             Image.fromarray(mask).save(out_path)
             print(f"Saved mask {i} (score={scores[i]:.4f}) → {out_path}")
         else:
             # Save to PFM
             m = masks[i].cpu().numpy()
             seg = np.squeeze(m).astype(np.float32)  # float32 mask for PFM
-            out_path = f"{output_dir}/{base_name}_mask_{i}.pfm"
+            out_path = f"{output_dir}/{base_name}_{ts}_mask_{i}.pfm"
             save_pfm(out_path, seg)
             print(f"Saved mask {i} (score={scores[i]:.4f}) → {out_path}")
 
