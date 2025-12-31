@@ -3,12 +3,14 @@ import numpy as np
 import cv2
 import torch
 from PIL import Image
+from datetime import datetime, timezone
 
 from transformers import Sam3TrackerProcessor, Sam3TrackerModel
 
 from .shared_utils import get_unique_path, save_pfm, BoxSelector
 
-def run_box_segmentation(input_path, output_path, num_masks=1, box=None, pfm=False):
+
+def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=False):
 
     if not input_path or not os.path.exists(input_path):
         print("Input not found:", input_path)
@@ -113,7 +115,7 @@ def run_box_segmentation(input_path, output_path, num_masks=1, box=None, pfm=Fal
     else:
         # Fallback: keep default order
         order = list(range(masks.shape[1])) if masks.ndim >= 4 else list(range(masks.shape[0]))
-
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     # Save up to num_masks
     count = min(int(num_masks), len(order))
     for rank, idx in enumerate(order[:count]):
@@ -128,10 +130,10 @@ def run_box_segmentation(input_path, output_path, num_masks=1, box=None, pfm=Fal
         seg = np.squeeze(m).astype(np.uint8)  # 0/1
 
         if pfm:
-            out = get_unique_path(f"{save_dir}/{base}_mask_{rank}.pfm")
+            out = get_unique_path(f"{save_dir}/{base}_{ts}_mask_{rank}.pfm")
             save_pfm(out, seg.astype(np.float32))
         else:
-            out = get_unique_path(f"{save_dir}/{base}_mask_{rank}.png")
+            out = get_unique_path(f"{save_dir}/{base}_{ts}_mask_{rank}.png")
             Image.fromarray(seg * 255).save(out)
 
         print("Saved:", out)
