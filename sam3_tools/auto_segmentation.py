@@ -2,6 +2,7 @@ import os
 import numpy as np
 import torch
 from PIL import Image
+from datetime import datetime, timezone
 
 from transformers import pipeline
 from .shared_utils import (
@@ -28,7 +29,7 @@ def run_auto_segmentation(input_path, output_path, num_masks, pfm=False):
     scores = outputs.get("scores")
 
     print("Generated masks:", len(masks))
-
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     # Save masks
     for i, m in enumerate(masks[:num_masks]):
         if torch.is_tensor(m):
@@ -36,10 +37,10 @@ def run_auto_segmentation(input_path, output_path, num_masks, pfm=False):
         seg = np.squeeze(m).astype(np.uint8)
 
         if pfm:
-            out = get_unique_path(f"{save_dir}/{base}_mask_{i}.pfm")
+            out = get_unique_path(f"{save_dir}/{base}_{ts}_mask_{i}.pfm")
             save_pfm(out, seg.astype(np.float32))
         else:
-            out = get_unique_path(f"{save_dir}/{base}_mask_{i}.png")
+            out = get_unique_path(f"{save_dir}/{base}_{ts}_mask_{i}.png")
             Image.fromarray(seg * 255).save(out)
 
 
