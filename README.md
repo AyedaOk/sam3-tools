@@ -26,6 +26,8 @@ The installation script is the easiest way to install **sam3-tools**. It will:
 * Download the SAM3 model checkpoints (Optional)
 * Install the Darktable plugin (Optional)
 
+Installation script Video for Linux, Windows and macOS → https://youtu.be/i08ccYK93Sg
+
 #### Linux
 
 ```
