@@ -17,7 +17,9 @@ def start_gui():
     # --- Inputs ---
     tk.Label(root, text="Input image:").grid(row=0, column=0, sticky="w")
     input_var = tk.StringVar(value=os.path.expanduser("~"))
-    tk.Entry(root, textvariable=input_var, width=40).grid(row=0, column=1, padx=4, pady=2)
+    tk.Entry(root, textvariable=input_var, width=40).grid(
+        row=0, column=1, padx=4, pady=2
+    )
     tk.Button(
         root,
         text="Browse",
@@ -28,7 +30,9 @@ def start_gui():
 
     tk.Label(root, text="Output folder:").grid(row=1, column=0, sticky="w")
     output_var = tk.StringVar(value=os.path.expanduser("~"))
-    tk.Entry(root, textvariable=output_var, width=40).grid(row=1, column=1, padx=4, pady=2)
+    tk.Entry(root, textvariable=output_var, width=40).grid(
+        row=1, column=1, padx=4, pady=2
+    )
     tk.Button(
         root,
         text="Browse",
@@ -41,8 +45,9 @@ def start_gui():
     tk.Label(root, text="Mode:").grid(row=2, column=0, sticky="w")
     mode_var = tk.StringVar(value="Box")
     mode_cb = ttk.Combobox(
-        root, textvariable=mode_var, values=["Box", "Auto", "Points", "Text"], state="readonly"
+        root, textvariable=mode_var, values=["Box", "Auto", "Points", "Text"]
     )
+
     mode_cb.grid(row=2, column=1, sticky="w", padx=4, pady=2)
 
     # --- Text prompt (enabled only for Text mode) ---
@@ -52,17 +57,18 @@ def start_gui():
     prompt_entry.grid(row=3, column=1, padx=4, pady=2, sticky="w")
 
     # --- Options ---
-    tk.Label(root, text="Num Masks:").grid(row=4, column=0, sticky="w")
+    num_masks_label = tk.Label(root, text="Num Masks:")
+    num_masks_label.grid(row=4, column=0, sticky="w")
     num_masks_var = tk.IntVar(value=1)
-    tk.Spinbox(root, from_=1, to=10, textvariable=num_masks_var, width=6).grid(
-        row=4, column=1, sticky="w", padx=4, pady=2
+    num_masks_spin = tk.Spinbox(
+        root, from_=1, to=10, textvariable=num_masks_var, width=6
     )
+    num_masks_spin.grid(row=4, column=1, sticky="w", padx=4, pady=2)
 
     pfm_var = tk.BooleanVar()
-    tk.Checkbutton(root, text="Save as PFM", variable=pfm_var).grid(row=5, column=0, sticky="w")
-
-    overlay_var = tk.BooleanVar()
-    tk.Checkbutton(root, text="Overlay", variable=overlay_var).grid(row=5, column=1, sticky="w")
+    tk.Checkbutton(root, text="Save as PFM", variable=pfm_var).grid(
+        row=5, column=0, sticky="w"
+    )
 
     # --- Status + Run button ---
     status_var = tk.StringVar(value="Ready.")
@@ -85,9 +91,19 @@ def start_gui():
         else:
             prompt_entry.config(state="disabled")
 
+    def _toggle_num_masks(*_):
+        if mode_var.get() == "Points":
+            num_masks_label.grid_remove()
+            num_masks_spin.grid_remove()
+        else:
+            num_masks_label.grid()
+            num_masks_spin.grid()
+
     # trace_add triggers when variable changes :contentReference[oaicite:2]{index=2}
     mode_var.trace_add("write", _toggle_prompt)
+    mode_var.trace_add("write", _toggle_num_masks)
     _toggle_prompt()
+    _toggle_num_masks()
 
     def _call_with_supported_kwargs(func, **kwargs):
         """
@@ -100,7 +116,9 @@ def start_gui():
 
     def _validate_paths(inp: str, out: str) -> bool:
         if not inp or not os.path.isfile(inp):
-            messagebox.showwarning("Missing input", "Please select a valid input image file.")
+            messagebox.showwarning(
+                "Missing input", "Please select a valid input image file."
+            )
             return False
         if not out:
             messagebox.showwarning("Missing output", "Please select an output folder.")
@@ -114,14 +132,15 @@ def start_gui():
         n = int(num_masks_var.get())
         mode = mode_var.get()
         save_pfm = bool(pfm_var.get())
-        overlay = bool(overlay_var.get())
         prompt = prompt_var.get().strip()
 
         if not _validate_paths(inp, out):
             return
 
         if mode == "Text" and not prompt:
-            messagebox.showwarning("Missing prompt", "Please enter a text prompt for Text mode.")
+            messagebox.showwarning(
+                "Missing prompt", "Please enter a text prompt for Text mode."
+            )
             return
 
         # Disable Run while working; keep GUI responsive by using a worker thread :contentReference[oaicite:3]{index=3}
@@ -133,13 +152,14 @@ def start_gui():
         n = int(num_masks_var.get())
         mode = mode_var.get()
         save_pfm = bool(pfm_var.get())
-        overlay = bool(overlay_var.get())
         prompt = prompt_var.get().strip()
 
         if not _validate_paths(inp, out):
             return
         if mode == "Text" and not prompt:
-            messagebox.showwarning("Missing prompt", "Please enter a text prompt for Text mode.")
+            messagebox.showwarning(
+                "Missing prompt", "Please enter a text prompt for Text mode."
+            )
             return
 
         _set_running(True, f"Running {mode}…")
@@ -150,11 +170,30 @@ def start_gui():
                 if mode == "Text":
                     run_text_segmentation(inp, out, prompt, n, pfm=save_pfm)
                 elif mode == "Points":
-                    _call_with_supported_kwargs(run_point_segmentation, input_path=inp, output_path=out, num_masks=n, pfm=save_pfm)
+                    _call_with_supported_kwargs(
+                        run_point_segmentation,
+                        input_path=inp,
+                        output_path=out,
+                        num_masks=n,
+                        pfm=save_pfm,
+                    )
                 elif mode == "Auto":
-                    _call_with_supported_kwargs(run_auto_segmentation, input_path=inp, output_path=out, num_masks=n, pfm=save_pfm)
+                    _call_with_supported_kwargs(
+                        run_auto_segmentation,
+                        input_path=inp,
+                        output_path=out,
+                        num_masks=n,
+                        pfm=save_pfm,
+                    )
                 else:  # Box
-                    _call_with_supported_kwargs(run_box_segmentation, input_path=inp, output_path=out, num_masks=n, box=None, pfm=save_pfm, overlay=overlay)
+                    _call_with_supported_kwargs(
+                        run_box_segmentation,
+                        input_path=inp,
+                        output_path=out,
+                        num_masks=n,
+                        box=None,
+                        pfm=save_pfm,
+                    )
 
                 _set_running(False, "Done.")
             except Exception as e:
@@ -162,7 +201,6 @@ def start_gui():
                 messagebox.showerror("Error", str(e))
 
         root.after(0, do_work)  # run on Tk main thread
-
 
     run_btn.config(command=run_clicked)
 

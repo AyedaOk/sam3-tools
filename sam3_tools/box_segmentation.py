@@ -7,11 +7,10 @@ from datetime import datetime, timezone
 
 from transformers import Sam3TrackerProcessor, Sam3TrackerModel
 
-from .shared_utils import get_unique_path, save_pfm, BoxSelector
+from .shared_utils import get_unique_path, save_pfm, load_image_rgb, BoxSelector
 
 
 def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=False):
-
     if not input_path or not os.path.exists(input_path):
         print("Input not found:", input_path)
         return
@@ -24,9 +23,8 @@ def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=Fal
     base = os.path.splitext(os.path.basename(input_path))[0]
 
     # Load image for box selection
-    bgr_img = cv2.imread(input_path)
+    rgb, bgr_img = load_image_rgb(input_path)
     if bgr_img is None:
-        print("Failed to load image:", input_path)
         return
     H, W = bgr_img.shape[:2]
 
@@ -70,7 +68,7 @@ def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=Fal
         return
 
     # Build a PIL image from the same pixels used for box selection
-    raw_image = Image.fromarray(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB))
+    raw_image = Image.fromarray(rgb)
 
     # Load SAM3 tracker
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -95,7 +93,9 @@ def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=Fal
     masks = processor.post_process_masks(
         outputs.pred_masks.cpu(),
         inputs["original_sizes"],
-    )[0]  # typically [num_objects, num_masks, H, W] :contentReference[oaicite:1]{index=1}
+    )[
+        0
+    ]  # typically [num_objects, num_masks, H, W] :contentReference[oaicite:1]{index=1}
 
     if masks is None or masks.numel() == 0:
         print("No masks returned.")
@@ -114,7 +114,11 @@ def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=Fal
         order = torch.argsort(iou_vec, descending=True).tolist()
     else:
         # Fallback: keep default order
-        order = list(range(masks.shape[1])) if masks.ndim >= 4 else list(range(masks.shape[0]))
+        order = (
+            list(range(masks.shape[1]))
+            if masks.ndim >= 4
+            else list(range(masks.shape[0]))
+        )
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     # Save up to num_masks
     count = min(int(num_masks), len(order))

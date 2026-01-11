@@ -8,7 +8,9 @@ from transformers import pipeline
 from .shared_utils import (
     get_unique_path,
     save_pfm,
+    load_image_rgb,
 )
+
 
 def run_auto_segmentation(input_path, output_path, num_masks, pfm=False):
     save_dir = output_path
@@ -18,13 +20,15 @@ def run_auto_segmentation(input_path, output_path, num_masks, pfm=False):
     print("Using device:", device)
 
     # Load input
-    img = Image.open(input_path).convert("RGB")
-    image_np = np.array(img)
+    rgb, _ = load_image_rgb(input_path)
+    if rgb is None:
+        return
+    raw_image = Image.fromarray(rgb)
 
     device_id = 0 if torch.cuda.is_available() else -1  # 0 = first GPU, -1 = CPU
     generator = pipeline("mask-generation", model="facebook/sam3", device=device_id)
 
-    outputs = generator(input_path, points_per_batch=64)  # OR pass PIL image
+    outputs = generator(raw_image, points_per_batch=64)
     masks = outputs["masks"]
     scores = outputs.get("scores")
 
@@ -42,10 +46,3 @@ def run_auto_segmentation(input_path, output_path, num_masks, pfm=False):
         else:
             out = get_unique_path(f"{save_dir}/{base}_{ts}_mask_{i}.png")
             Image.fromarray(seg * 255).save(out)
-
-
-
-
-
-
-

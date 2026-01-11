@@ -2,8 +2,48 @@ import os
 import platform
 from pathlib import Path
 import numpy as np
+
 # import yaml
 import cv2
+import rawpy
+from PIL import Image
+
+
+RAW_EXTENSIONS = {
+    ".3fr",
+    ".ari",
+    ".arw",
+    ".bay",
+    ".cap",
+    ".cr2",
+    ".cr3",
+    ".crw",
+    ".dcr",
+    ".dcs",
+    ".dng",
+    ".eip",
+    ".erf",
+    ".iiq",
+    ".kdc",
+    ".mef",
+    ".mos",
+    ".mrw",
+    ".nef",
+    ".nrw",
+    ".orf",
+    ".pef",
+    ".ptx",
+    ".raf",
+    ".r3d",
+    ".rw2",
+    ".rwl",
+    ".rwz",
+    ".sr2",
+    ".srf",
+    ".srw",
+    ".x3f",
+}
+
 
 # ============================================================
 # Unique filename generator
@@ -16,6 +56,7 @@ def get_unique_path(path):
         new_path = f"{base}_{counter}{ext}"
         counter += 1
     return new_path
+
 
 # ============================================================
 # Save PFM files
@@ -37,9 +78,34 @@ def save_pfm(path, image, scale=1.0):
 
         image.tofile(f)
 
+
+# ============================================================
+# Image loading
+# ============================================================
+def load_image_rgb(path):
+    if not os.path.isfile(path):
+        print("Input not found:", path)
+        return None, None
+
+    ext = Path(path).suffix.lower()
+    try:
+        if ext in RAW_EXTENSIONS:
+            with rawpy.imread(path) as raw:
+                rgb = raw.postprocess()
+        else:
+            rgb = np.array(Image.open(path).convert("RGB"))
+    except Exception as exc:
+        print("Failed to load image:", exc)
+        return None, None
+
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    return rgb, bgr
+
+
 # ============================================================
 # Config handling
 # ============================================================
+
 # def get_config_path():
 #     if platform.system().lower() == "windows":
 #         base = Path(
@@ -83,6 +149,7 @@ def save_pfm(path, image, scale=1.0):
 #
 #     with open(cfg_path, "r") as f:
 #         return yaml.safe_load(f)
+
 
 # ============================================================
 # Box Selector (OpenCV drawing)

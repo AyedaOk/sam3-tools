@@ -7,15 +7,19 @@ from datetime import datetime, timezone
 
 from .shared_utils import (
     save_pfm,
+    load_image_rgb,
 )
 
-def run_text_segmentation(input_path, output_path, prompt, num_masks, pfm=False):
 
+def run_text_segmentation(input_path, output_path, prompt, num_masks, pfm=False):
     output_dir = output_path
     os.makedirs(output_dir, exist_ok=True)
 
     # Load the image from path (not URL)
-    image = Image.open(input_path).convert("RGB")
+    rgb, _ = load_image_rgb(input_path)
+    if rgb is None:
+        return
+    image = Image.fromarray(rgb)
 
     # Device + models
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -32,7 +36,7 @@ def run_text_segmentation(input_path, output_path, prompt, num_masks, pfm=False)
         outputs,
         threshold=0.5,
         mask_threshold=0.5,
-        target_sizes=inputs.get("original_sizes").tolist()
+        target_sizes=inputs.get("original_sizes").tolist(),
     )[0]
 
     masks = results["masks"]
@@ -62,6 +66,7 @@ def run_text_segmentation(input_path, output_path, prompt, num_masks, pfm=False)
             out_path = f"{output_dir}/{base_name}_{ts}_mask_{i}.pfm"
             save_pfm(out_path, seg)
             print(f"Saved mask {i} (score={scores[i]:.4f}) → {out_path}")
+
 
 if __name__ == "__main__":
     main()
