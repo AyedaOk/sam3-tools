@@ -3,7 +3,6 @@ import platform
 from pathlib import Path
 import numpy as np
 
-# import yaml
 import cv2
 import rawpy
 from PIL import Image
@@ -100,55 +99,6 @@ def load_image_rgb(path):
 
     bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     return rgb, bgr
-
-
-# ============================================================
-# Config handling
-# ============================================================
-
-# def get_config_path():
-#     if platform.system().lower() == "windows":
-#         base = Path(
-#             os.getenv("APPDATA", Path.home() / "AppData" / "Roaming")
-#         )
-#         cfg_dir = base / "sam2"
-#     else:
-#         cfg_dir = Path.home() / ".config" / "sam2"
-#
-#     cfg_dir.mkdir(parents=True, exist_ok=True)
-#     return cfg_dir / "config.yaml"
-#
-#
-# def load_or_create_config():
-#     cfg_path = get_config_path()
-#
-#     if not cfg_path.exists():
-#         if platform.system().lower() == "windows":
-#             # Correct Windows path
-#             base = Path(os.getenv("APPDATA")) / "sam2" / "checkpoints"
-#         else:
-#             # Correct Linux/macOS path
-#             base = Path.home() / ".config" / "sam2" / "checkpoints"
-#
-#         default = {
-#             "checkpoints": {
-#                 "1": str(base / "sam2.1_hiera_large.pt"),
-#                 "2": str(base / "sam2.1_hiera_base_plus.pt"),
-#                 "3": str(base / "sam2.1_hiera_small.pt"),
-#                 "4": str(base / "sam2.1_hiera_tiny.pt"),
-#             }
-#         }
-#
-#         base.mkdir(parents=True, exist_ok=True)
-#
-#         with open(cfg_path, "w") as f:
-#             yaml.dump(default, f)
-#
-#         print(f"Created default config: {cfg_path}")
-#         return default
-#
-#     with open(cfg_path, "r") as f:
-#         return yaml.safe_load(f)
 
 
 # ============================================================
