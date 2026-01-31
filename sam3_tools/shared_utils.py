@@ -2,8 +2,47 @@ import os
 import platform
 from pathlib import Path
 import numpy as np
-# import yaml
+
 import cv2
+import rawpy
+from PIL import Image
+
+
+RAW_EXTENSIONS = {
+    ".3fr",
+    ".ari",
+    ".arw",
+    ".bay",
+    ".cap",
+    ".cr2",
+    ".cr3",
+    ".crw",
+    ".dcr",
+    ".dcs",
+    ".dng",
+    ".eip",
+    ".erf",
+    ".iiq",
+    ".kdc",
+    ".mef",
+    ".mos",
+    ".mrw",
+    ".nef",
+    ".nrw",
+    ".orf",
+    ".pef",
+    ".ptx",
+    ".raf",
+    ".r3d",
+    ".rw2",
+    ".rwl",
+    ".rwz",
+    ".sr2",
+    ".srf",
+    ".srw",
+    ".x3f",
+}
+
 
 # ============================================================
 # Unique filename generator
@@ -16,6 +55,7 @@ def get_unique_path(path):
         new_path = f"{base}_{counter}{ext}"
         counter += 1
     return new_path
+
 
 # ============================================================
 # Save PFM files
@@ -37,52 +77,29 @@ def save_pfm(path, image, scale=1.0):
 
         image.tofile(f)
 
+
 # ============================================================
-# Config handling
+# Image loading
 # ============================================================
-# def get_config_path():
-#     if platform.system().lower() == "windows":
-#         base = Path(
-#             os.getenv("APPDATA", Path.home() / "AppData" / "Roaming")
-#         )
-#         cfg_dir = base / "sam2"
-#     else:
-#         cfg_dir = Path.home() / ".config" / "sam2"
-#
-#     cfg_dir.mkdir(parents=True, exist_ok=True)
-#     return cfg_dir / "config.yaml"
-#
-#
-# def load_or_create_config():
-#     cfg_path = get_config_path()
-#
-#     if not cfg_path.exists():
-#         if platform.system().lower() == "windows":
-#             # Correct Windows path
-#             base = Path(os.getenv("APPDATA")) / "sam2" / "checkpoints"
-#         else:
-#             # Correct Linux/macOS path
-#             base = Path.home() / ".config" / "sam2" / "checkpoints"
-#
-#         default = {
-#             "checkpoints": {
-#                 "1": str(base / "sam2.1_hiera_large.pt"),
-#                 "2": str(base / "sam2.1_hiera_base_plus.pt"),
-#                 "3": str(base / "sam2.1_hiera_small.pt"),
-#                 "4": str(base / "sam2.1_hiera_tiny.pt"),
-#             }
-#         }
-#
-#         base.mkdir(parents=True, exist_ok=True)
-#
-#         with open(cfg_path, "w") as f:
-#             yaml.dump(default, f)
-#
-#         print(f"Created default config: {cfg_path}")
-#         return default
-#
-#     with open(cfg_path, "r") as f:
-#         return yaml.safe_load(f)
+def load_image_rgb(path):
+    if not os.path.isfile(path):
+        print("Input not found:", path)
+        return None, None
+
+    ext = Path(path).suffix.lower()
+    try:
+        if ext in RAW_EXTENSIONS:
+            with rawpy.imread(path) as raw:
+                rgb = raw.postprocess()
+        else:
+            rgb = np.array(Image.open(path).convert("RGB"))
+    except Exception as exc:
+        print("Failed to load image:", exc)
+        return None, None
+
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    return rgb, bgr
+
 
 # ============================================================
 # Box Selector (OpenCV drawing)

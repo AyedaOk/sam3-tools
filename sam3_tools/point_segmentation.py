@@ -10,7 +10,9 @@ from accelerate import Accelerator
 from .shared_utils import (
     get_unique_path,
     save_pfm,
+    load_image_rgb,
 )
+
 
 # ============================================================
 # Point Selector (interactive point mode)
@@ -19,7 +21,6 @@ class PointSelector:
     def __init__(self, img_bgr, model, processor, raw_image):
         self.clone = img_bgr.copy()
         self.image_bgr = img_bgr.copy()
-
 
         self.model = model
         self.processor = processor
@@ -50,7 +51,6 @@ class PointSelector:
             self.points_neg.append((x, y))
             self.update_mask()
 
-
     # ------------------------------------------------------------------
 
     def update_mask(self):
@@ -62,7 +62,6 @@ class PointSelector:
 
         all_pts = [list(p) for p in (self.points_pos + self.points_neg)]
         labels = [1] * len(self.points_pos) + [0] * len(self.points_neg)
-
 
         input_points = [[all_pts]]
         input_labels = [[labels]]
@@ -104,7 +103,6 @@ class PointSelector:
         self.current_mask = best_mask
         self.render_preview()
 
-
     # ------------------------------------------------------------------
     def render_preview(self):
         img = self.clone.copy()
@@ -116,13 +114,14 @@ class PointSelector:
             img[mask > 0] = (0, 0, 255)
 
         # Draw points
-        for (x, y) in self.points_pos:
+        for x, y in self.points_pos:
             cv2.circle(img, (x, y), 5, (0, 255, 0), -1)  # green = FG
 
-        for (x, y) in self.points_neg:
+        for x, y in self.points_neg:
             cv2.circle(img, (x, y), 5, (0, 0, 255), -1)  # red = BG
 
         self.image_bgr = img
+
 
 # ============================================================
 # RUN POINT SEGMENTATION
@@ -151,11 +150,10 @@ def run_point_segmentation(
     processor = Sam3TrackerProcessor.from_pretrained("facebook/sam3")
 
     # Load image
-    bgr_img = cv2.imread(input_path)
-    raw_image = Image.fromarray(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB))
+    rgb, bgr_img = load_image_rgb(input_path)
     if bgr_img is None:
-        print("Failed to load image:", input_path)
         return
+    raw_image = Image.fromarray(rgb)
 
     # Create selector interface
     win = "Left Click=Positive, Right/Middle Click=Negative, Enter=Confirm, R=Reset, Esc=Cancel"
