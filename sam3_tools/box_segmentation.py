@@ -32,7 +32,7 @@ def run_box_segmentation(input_path, output_path, num_masks=3, box=None, pfm=Fal
     if box is None:
         print("Draw selection box...")
         win = "Box Selection (Enter=OK, R=reset, Esc=cancel)"
-        selector = BoxSelector(bgr_img.copy())
+        selector = BoxSelector(bgr_img.copy(), win_name=win)
 
         cv2.namedWindow(win, cv2.WINDOW_NORMAL)
         cv2.setMouseCallback(win, selector.mouse_cb)
